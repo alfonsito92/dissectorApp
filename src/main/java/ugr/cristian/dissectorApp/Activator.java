@@ -32,45 +32,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class Activator extends ComponentActivatorAbstractBase {
-    private static final Logger log = LoggerFactory.getLogger(TopoHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(DissectorHandler.class);
 
     public Object[] getImplementations() {
         log.trace("Getting Implementations");
 
-        Object[] res = { TopoHandler.class };
+        Object[] res = { DissectorHandler.class };
         return res;
     }
 
     public void configureInstance(Component c, Object imp, String containerName) {
-        log.trace("Configuring instance");
+      log.trace("Configuring instance");
 
-        if (imp.equals(DissectorHandler.class)) {
-            // Define exported and used services for TopoHandler component.
+      if (imp.equals(DissectorHandler.class)) {
+        // Define exported and used services for DissectorHandler component.
 
-            Dictionary<String, Object> props = new Hashtable<String, Object>();
-            props.put("salListenerName", "mytopohandler");
+        Dictionary<String, Object> props = new Hashtable<String, Object>();
+        props.put("salListenerName", "myDissectorHandler");
 
-            // Export IListenTopoUpdates interface to receive packet-in events.
-            c.setInterface(new String[] {IListenTopoUpdates.class.getName()}, props);
+        // Export IListenDataPacket interface to receive packet-in events.
+        c.setInterface(new String[] {IListenDataPacket.class.getName()}, props);
 
-            // Need FlowProgrammerService for programming flows
-            c.add(createContainerServiceDependency(containerName).setService(
-                    IFlowProgrammerService.class).setCallbacks(
-                    "setFlowProgrammerService", "unsetFlowProgrammerService")
-                    .setRequired(true));
+        // Need the DataPacketService for encoding, decoding, sending data packets
+        c.add(createContainerServiceDependency(containerName).setService(
+        IDataPacketService.class).setCallbacks(
+        "setDataPacketService", "unsetDataPacketService")
+        .setRequired(true));
 
-            // Need SwitchManager service for enumerating ports of switch
-            c.add(createContainerServiceDependency(containerName).setService(
-                    ISwitchManager.class).setCallbacks(
-                    "setSwitchManagerService", "unsetSwitchManagerService")
-                    .setRequired(true));
+        // Need FlowProgrammerService for programming flows
+        c.add(createContainerServiceDependency(containerName).setService(
+        IFlowProgrammerService.class).setCallbacks(
+        "setFlowProgrammerService", "unsetFlowProgrammerService")
+        .setRequired(true));
 
-            // Need TopologyManager service to controll the Topology in a Proactive Way
-            c.add(createContainerServiceDependency(containerName).setService(
-                    ITopologyManager.class).setCallbacks(
-                    "setTopologyManagerService", "unsetTopologyManagerService")
-                    .setRequired(true));
-        }
+        // Need SwitchManager service for enumerating ports of switch
+        c.add(createContainerServiceDependency(containerName).setService(
+        ISwitchManager.class).setCallbacks(
+        "setSwitchManagerService", "unsetSwitchManagerService")
+        .setRequired(true));
+
+        // Need TopologyManager service to controll the Topology in a Proactive Way
+        c.add(createContainerServiceDependency(containerName).setService(
+        ITopologyManager.class).setCallbacks(
+        "setTopologyManagerService", "unsetTopologyManagerService")
+        .setRequired(true));
+      }
 
     }
-}
+  }

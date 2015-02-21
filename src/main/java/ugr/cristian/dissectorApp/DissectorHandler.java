@@ -213,7 +213,7 @@ public class DissectorHandler implements IListenDataPacket {
           TCP tcpDatagram = (TCP) l4Datagram;
           int clientPort = tcpDatagram.getSourcePort();
           int dstPort = tcpDatagram.getDestinationPort();
-
+        
           if (publicInetAddress.equals(dstAddr) && dstPort == SERVICE_PORT) {
             log.info("Received packet for load balanced service");
 
@@ -222,6 +222,8 @@ public class DissectorHandler implements IListenDataPacket {
             InetAddress serverInstanceAddr;
             byte[] serverInstanceMAC;
             NodeConnector egressConnector;
+
+
 
             // Synchronize in case there are two incoming requests at the same time.
             synchronized (this) {
